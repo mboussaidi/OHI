@@ -3,10 +3,10 @@
         <div class="top-title">
             <p class="main-title">Contact us</p>
             <div class="title-section-home">
-                <h3>Looking To Be Added To Our Listing? Have A Question?</h3>
+                <h3>Looking to be added to our listing? Have A Question?</h3>
             </div>
             <div>
-                <p>Fill out the form below or get in touch with us with any questions or to be added to the OHI listing.</p>
+                <p>Please, fill out the form below to reach out with any questions or to request inclusion in the OHI listing.</p>
             </div>
         </div>
     
@@ -32,8 +32,6 @@
                     <textarea id="message" name="message" required></textarea>
                 </div>
                 <v-btn class="submit-button" @click="reloadPage">Submit</v-btn>
-    
-                <!-- <button type="submit" class="submit-button">Submit</button> -->
             </form>
         </div>
     </div>
