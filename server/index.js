@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer'); // Import nodemailer
 
 const app = express();
 const PORT = process.env.PORT || 3009;
@@ -22,13 +23,60 @@ const saveBusinesses = (businesses) => {
     fs.writeFileSync(dbPath, JSON.stringify(businesses, null, 2), 'utf-8');
 };
 
+// --- Nodemailer Transporter Setup ---
+// Configure your email service details.
+// You'll likely want to use environment variables for security.
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Example: 'gmail'. You can use other services or direct SMTP.
+    auth: {
+        user: 'ottawahalalinitiative@gmail.com', // Your email address
+        pass: 'zlpycjjunestpkvo' // Your email app password or regular password (less secure)
+    }
+});
+// --- End Nodemailer Transporter Setup ---
+
+
+// ✅ POST endpoint for contact form submissions
+app.post('/api/contact', async (req, res) => {
+    console.log(`Server log #####: email preparation started`);
+
+    const { name, email, subject, message } = req.body;
+
+    if (!name || !email || !subject || !message) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    try {
+        const mailOptions = {
+            from: 'ottawahalalinitiative@gmail.com', // Sender address (must be the same as your auth user for some services)
+            to: 'ottawahalalinitiative@gmail.com', // Your email address where you want to receive requests
+            subject: `New Contact Form Submission: ${subject}`,
+            html: `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message}</p>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Contact form email sent successfully.');
+        res.status(200).json({ message: 'Message sent successfully!' });
+    } catch (error) {
+        console.error('Error sending contact form email:', error);
+        res.status(500).json({ message: 'Failed to send message.', error: error.message });
+    }
+});
+
+
 // ✅ GET all businesses (with filters)
 app.get('/api/businesses', (req, res) => {
     const { city, type, status, search } = req.query;
     let businesses = getBusinesses();
 
 
-    console.log(`Server log #####: businesses___=${businesses.b_city}`);
+    console.log(`Server log #####: GET businesses___=${businesses.b_city}`);
 
     // Filtering
     if (city) {

@@ -12,13 +12,15 @@
 
                 <p>Allah Most High says: “O people! Eat of what is in the earth, Halal and Pure, and do not follow the footsteps of Satan. Indeed, for you he is an open enemy.” (Surah al-Baqarah, 168)</p>
                 
-                <p style="font-size:20px; text-align: center;">قَالَ اللَّهُ تَعَالَى: يَا أَيُّهَا النَّاسُ كُلُوا مِمَّا فِي الْأَرْضِ حَلَالًا طَيِّبًا وَلَا تَتَّبِعُوا خُطُوَاتِ الشَّيْطَانِ ۚ إِنَّهُ لَكُمْ عَدُوٌّ مُبِينٌ<br>
+                <p class="ayah-text">قَالَ اللَّهُ تَعَالَى: يَا أَيُّهَا النَّاسُ كُلُوا مِمَّا فِي الْأَرْضِ حَلَالًا طَيِّبًا وَلَا تَتَّبِعُوا خُطُوَاتِ الشَّيْطَانِ ۚ إِنَّهُ لَكُمْ عَدُوٌّ مُبِينٌ<br>
                 [سورة البقرة - الآية: ١٦٨]
                 </p>
 
                 <br />
                 <p>The word “Halal” means permissible. Therefore, halal meat is prepared as prescribed by Islamic law, making it permissible for a Muslim to consume.</p>
                 <p style="font-weight: bold;">Three conditions must be met for meat to be considered halal: </p>
+
+            <div class="faq-section">
     
                 <div class="faq-item" @click="toggleFaq(0)">
                     <h3 class="faq-question">
@@ -35,9 +37,9 @@
                     </h3>
                     <div v-if="faqOpen[1]" class="faq-answer">
                         <p>The name of Allah must be pronounced at the time of slaughtering, whether actually or effectively (such as when it is forgotten by someone who would normally have said it). Allah (SWT) says: “Eat not of (meats) over which Allah’s name has not been pronounced. That would be sinful (fisq).” (Surah al-An’am, 121). </p>
-                        <p style="font-size: 20px; text-align: center;">قَالَ اللَّهُ تَعَالَى: وَلَا تَأْكُلُوا مِمَّا لَمْ يُذْكَرِ ٱسْمُ ٱللَّهِ عَلَيْهِ وَإِنَّهُۥ لَفِسْقٌ ۗ وَإِنَّ ٱلشَّيَـٰطِينَ لَيُوحُونَ إِلَىٰٓ أَوْلِيَآئِهِمْ لِيُجَـٰدِلُوكُمْ ۖ وَإِنْ أَطَعْتُمُوهُمْ إِنَّكُمْ لَمُشْرِكُونَ<br>
+                        <p class="ayah-text">قَالَ اللَّهُ تَعَالَى: وَلَا تَأْكُلُوا مِمَّا لَمْ يُذْكَرِ ٱسْمُ ٱللَّهِ عَلَيْهِ وَإِنَّهُۥ لَفِسْقٌ ۗ وَإِنَّ ٱلشَّيَـٰطِينَ لَيُوحُونَ إِلَىٰٓ أَوْلِيَآئِهِمْ لِيُجَـٰدِلُوكُمْ ۖ وَإِنْ أَطَعْتُمُوهُمْ إِنَّكُمْ لَمُشْرِكُونَ<br>
                         [سورة الأنعام - الآية : ١٢١]</p>
-                        <p>From this verse, it is clearly deduced that animals that are not slaughtered in Allah’s name are unlawful to consume. All of the jurists from the 4 madhahib (schools of thought) hold this opinion. An exception is found with certain jurists and only on the condition that the tasmiyah was left out unintentionally. Imam As-Shafi’i (RA) does say in his book “al-Umm” that even if it is done intentionally, it is still lawful to consume; however, this is only if the individual is not habitual in doing so (Kitab al-Umm, 2/227)</p>
+                        <p>From this verse, it is clearly deduced that animals that are not slaughtered in Allah’s name are unlawful to consume. The majority of the Muslim jurists throughout history have held firm on to this opinion.</p>
                     </div>
                 </div>
     
@@ -50,6 +52,7 @@
                         <p>The slaughterer can also be from the People of the Book (Ahl al-Kitab). However, according to condition number 1, the animal must be slaughtered and not killed by other methods like electrocution or blunt force trauma, which are common today. Furthermore, under condition number 2, the slaughterer must be an Ahl al-Kitab who pronounces Allah’s name at the time of slaughter. Therefore, an Ahl al-Kitab who is a nominal Christian, meaning Christian in name only, and does not invoke Allah’s name during the slaughter would not be considered a valid Ahl al-Kitab slaughter, and the meat would not be permissible to consume.</p>
                     </div>
                 </div>
+            </div>
     
     
             </div>
@@ -61,14 +64,6 @@
     </div>
 </template>
   
-<!--<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-    name: 'About'
-});
-</script>-->
-
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
@@ -76,7 +71,7 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
     name: 'Halal',
     setup() {
-        const faqOpen = ref([false, false, false]); // One for each condition
+        const faqOpen = ref([false, false, false]); 
 
         const toggleFaq = (index: number) => {
             faqOpen.value[index] = !faqOpen.value[index];

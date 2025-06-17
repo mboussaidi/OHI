@@ -1,13 +1,13 @@
 <template>
     <div class="listings">
         <div class="top-title">
-            <p class="main-title">Our listings</p>
+            <p class="main-title">Our Listings</p>
         </div>
         <div class="filterinfo">
 
             <div class="filterinfo_item">
                 <div class="filterinfo_item-name">Category</div>
-                <select v-model="selectedCategory" @change="fetchBusinesses">
+                <select class="filterinfo_item-value" v-model="selectedCategory" @change="fetchBusinesses">
                     <option value="">All Categories</option>
                     <option value="Restaurant">Restaurants</option>
                     <option value="Butcher">Butchers</option>
@@ -16,14 +16,14 @@
 
             <div class="filterinfo_item">
                 <div class="filterinfo_item-name">City</div>
-                <select v-model="selectedCity" @change="fetchBusinesses">
+                <select class="filterinfo_item-value" v-model="selectedCity" @change="fetchBusinesses">
                     <option value="">All Cities</option>
                     <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
                 </select>
             </div>
             <div class="filterinfo_item">
                 <div class="filterinfo_item-name">Search</div>
-                <input v-model="searchTerm" @input="fetchBusinesses" placeholder="Search..." />
+                <input class="filterinfo_item-value" v-model="searchTerm" @input="fetchBusinesses" placeholder="Search..." />
             </div>
         </div>
 
@@ -131,200 +131,5 @@
 </script>
 
 <style scoped>
-    .listings {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        box-sizing: border-box;
-        justify-content: flex-start;
-    }
-    
-    
-    .filterinfo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-    
-    
-    .filterinfo_item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-width: 200px;
-    }
-    
-    
-    .filterinfo_item-name {
-        font-weight: bold;
-        margin-bottom: 5px;
-        text-align: center;
-    }
-    
-    
-    select,
-    input {
-        width: 100%;
-        height: 40px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-        box-sizing: border-box;
-        font-size: 16px;
-    }
-    
-    
-    select:hover,
-    input:hover {
-        border-color: #007BFF;
-    }
-    
-    .business-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-        max-width: 960px;
-    }
-    
-    .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    
-    .business-card {
-        border: 1px solid #ccc;
-        padding: 20px;
-        width: 300px;
-        height: 400px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.6s forwards;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
 
-        height: 100%;
-    }
- 
-    .card-content {
-        margin-top: auto; 
-    }
-
-    .card-title {
-        height: 80px;
-        text-align: center;
-        align-content: top;
-        margin-bottom: 20px;
-    }
-
-
-
-
-    
-    .business-card h2 {
-        font-size: 22px;
-        white-space: normal;
-        overflow: visible;
-    }
-    
-    .business-card p {
-        margin: 5px 0;
-        font-size: 16px;
-        line-height: 1.4;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    /* Sequential animation delay */
-    
-    .business-card:nth-child(1) {
-        animation-delay: 0.15s;
-    }
-    
-    .business-card:nth-child(2) {
-        animation-delay: 0.3s;
-    }
-    
-    .business-card:nth-child(3) {
-        animation-delay: 0.45s;
-    }
-    
-    .business-card:nth-child(4) {
-        animation-delay: 0.6s;
-    }
-    
-    .business-card:nth-child(5) {
-        animation-delay: 0.75s;
-    }
-    
-    .business-card:nth-child(6) {
-        animation-delay: 0.9s;
-    }
-    
-    .business-card:hover {
-        transform: translateY(-20px) scale(1.05);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-    
-    
-    @keyframes fadeInUp {
-        0% {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 30px;
-    }
-    
-    .pagination button {
-        background-color: #45764c;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        cursor: pointer;
-        transition: background 0.3s;
-        margin: 0 10px;
-    }
-    
-    .pagination button:disabled {
-        background-color: #a9abaad1;
-        cursor: not-allowed;
-    }
-    
-    .pagination button:hover:not(:disabled) {
-        background-color: #389f47;
-    }
-    
-    .pagination span {
-        font-size: 16px;
-    }
-    
-    .no-results {
-        text-align: center;
-        font-size: 18px;
-        color: #555;
-        margin: 40px 0;
-    }
 </style>

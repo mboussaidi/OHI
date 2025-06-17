@@ -13,11 +13,6 @@
     
     </div>
     
-    
-    
-    
-    
-    
     <div class="section-home-about">
         <div class="left-section">
             <div class="title-section-home">
@@ -34,11 +29,6 @@
             <img src="/public/img/food-img-001.jpg" alt="" />
         </div>
     </div>
-    
-    
-    
-    
-    
     
     <div class="section-home-recentlisting">
     
@@ -67,30 +57,4 @@ export default defineComponent({
   
 
 <style scoped>
-.redirect-button {
-    box-shadow: 0 1px #ffffffbf inset;
-    display: inline-block;
-    padding: 12px 24px;
-    font-weight: bold;
-    color: rgb(220, 236, 229);
-    text-decoration: none;
-    border-radius: 8px;
-    font-family: Inter, sans-serif;
-    font-weight: 500;
-    text-shadow: 0 0 2px rgba(0, 0, 0, .2);
-    transition: all .2s ease-in-out;
-    width: fit-content;
-    /*  background: linear-gradient(135deg, #646cff, #535bf2);*/
-    background: radial-gradient(141.42% 141.42% at 100% 0%, #ffffff80, #fff0), radial-gradient(140.35% 140.35% at 100% 94.74%, #116a4b, #bd34fe00), radial-gradient(89.94% 89.94% at 18.42% 15.79%, #165047, #41d1ff00);
-    transition: background 0.3s, transform 0.2s;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.redirect-button:hover {
-    background-color: #1af478;
-}
 </style>

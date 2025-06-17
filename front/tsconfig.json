@@ -13,5 +13,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/views/oldfileListings.vue.old"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/views/oldfileListings.vue.old", "src/views/Contact_vue.backup"]
 }
