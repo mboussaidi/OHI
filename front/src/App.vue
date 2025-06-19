@@ -19,7 +19,7 @@ export default defineComponent({
                     <header class="header">
                         <nav class="nav">
                             <router-link to="/">Home</router-link>
-                            <router-link to="/about">About us</router-link>
+                            <router-link to="/about">About Us</router-link>
                             <router-link to="/halal">Halal</router-link>
                             <router-link to="/listings">Listings</router-link>
                             <router-link to="/contact">Contact</router-link>
