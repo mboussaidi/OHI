@@ -14,11 +14,9 @@
                 <p>Sayyiduna Abu Hurayra (Allah be pleased with him) narrates that the Messenger of Allah (Allah bless him & give him peace) said: <i>“Allah the Almighty is pure and accepts only that which is pure. Allah has commanded the faithful to do that which he commanded the Messengers, and the Almighty has said: “O Messengers! Eat of the pure things and do right”. And Allah the Almighty has said: “O you who believe! Eat of the pure things We have provided you.” Then he (Allah bless him & give him peace) mentioned (the case of) a man who, having journeyed far, is disheveled and dusty and who spreads out his hands to the heavens (saying): “O Lord! O Lord!” —while his food is unlawful, his drink unlawful, his clothing unlawful, and he is nourished unlawfully, so how can he be answered!”</i> (Sahih Muslim)</p>
     
                 <br />
-                <br />
                 <h3>Disclaimer: We are not a certifying body. Our aim is to investigate a restaurant or butcher shop's meat supplier and determine whether the supplier follows Shari'ah guidelines. We then share this information with the public.</h3>
     
                 <h3>Disclaimer: We only research and verify, NOT certify.</h3>
-                <br />
                 <br />
                 <p>We conduct restaurant assessments every 45-90 days. We recommend verifying any restaurant that hasn't been assessed in over a month, as there could have been alterations in their meat supply during that time.</p>
                 

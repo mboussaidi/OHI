@@ -15,9 +15,9 @@
             </div>
 
             <div class="filterinfo_item">
-                <div class="filterinfo_item-name">City</div>
+                <div class="filterinfo_item-name">Ottawa/Gatineau</div>
                 <select class="filterinfo_item-value" v-model="selectedCity" @change="fetchBusinesses">
-                    <option value="">All Cities</option>
+                    <option value="">All Areas</option>
                     <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
                 </select>
             </div>
@@ -78,8 +78,7 @@
                 selectedCategory: '',
                 selectedCity: '',
                 searchTerm: '',
-                cities: ['Ottawa', 'Gatineau', 'Kanata', 'Nepean', 'Orléans', 'Gloucester', 'Barrhaven', 'Stittsville', 'Rockland', 'Manotick', 'Greely', 'Clarence Creek'],
-    
+                cities: ["Barrhaven","Clarence Creek","Gatineau","Gloucester","Greely","Kanata","Manotick","Nepean","Orléans","Ottawa","Rockland","Stittsville"],
                 currentPage: 1,
                 itemsPerPage: 6
             };
