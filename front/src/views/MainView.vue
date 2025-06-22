@@ -18,10 +18,10 @@
             <div class="title-section-home">
                 <h2>Mission Statement</h2>
             </div>
-            <div class="description-section-home">    
-                <p>Be Confident Wherever You Eat</p>
-                <p>Ottawa Halal Initiative (OHI) was established for the purpose of making halal consumption an attainable goal for the Muslim population in the Ottawa region. Recognizing the importance of eating halal on both physical and spiritual health, OHI intends to inquire and verify the permissibility of the meat source.</p>
-                <p>The Prophet (Sallallahu 'Alayhi Wasallam) said “The lawful is clear, and the unlawful is clear. Between these lie matters of doubt. Regarding these, many are ignorant. Whomsoever falls into these, falls into the unlawful, like a shepherd grazing (his flock) upon a sanctuary's perimeter very soon falls into trespass.” (Bukhari & Muslim)</p>
+            <div class="description-section-home">
+                <span>Be Confident Wherever You Eat</span>
+                <span>Ottawa Halal Initiative (OHI) was established for the purpose of making halal consumption an attainable goal for the Muslim population in the Ottawa region. Recognizing the importance of eating halal on both physical and spiritual health, OHI intends to inquire and verify the permissibility of the meat source.</span>
+                <span>The Prophet (Sallallahu 'Alayhi Wasallam) said “The lawful is clear, and the unlawful is clear. Between these lie matters of doubt. Regarding these, many are ignorant. Whomsoever falls into these, falls into the unlawful, like a shepherd grazing (his flock) upon a sanctuary's perimeter very soon falls into trespass.” (Bukhari & Muslim)</span>
             </div>
         </div>
     
