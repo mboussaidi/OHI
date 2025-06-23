@@ -51,7 +51,8 @@ const formData = ref({
 
 const submitForm = async () => {
     try {
-        const response = await axios.post('http://localhost:3009/api/contact', formData.value);
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/contact`;
+        const response = await axios.post(apiUrl, formData.value);
         console.log('Form submitted successfully:', response.data);
         alert('Your message has been sent successfully!');
         // Optionally clear the form after successful submission

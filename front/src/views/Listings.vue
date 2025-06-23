@@ -98,7 +98,8 @@
         methods: {
             async fetchBusinesses() {
                 try {
-                    const response = await axios.get('http://localhost:3009/api/businesses', {
+                    const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/businesses`;
+                    const response = await axios.get(apiUrl, {
                         params: {
                             city: this.selectedCity,
                             type: this.selectedCategory,
