@@ -44,6 +44,9 @@ export default defineComponent({
     setup() {
         const router = useRouter();
 
+        // Example of using the environment variable
+        console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
         const goToListings = () => {
             router.push('/listings');
         };
