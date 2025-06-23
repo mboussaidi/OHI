@@ -1,24 +1,37 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Node.js dependencies
+/node_modules
+/dist
+/build
+.env
+.env.*.local
+.yarn-integrity
+npm-debug.log
+yarn-error.log
+.pnpm-store
 
-node_modules
-dist
-dist-ssr
-*.local
+# Nuxt.js specifics
+.nuxt/
+.output/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Vite specifics
+.vite/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Operating System files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Log and temporary files
+*.log
+*.tmp
+*.bak
+
+
+src/App.vue.js

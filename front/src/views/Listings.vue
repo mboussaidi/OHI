@@ -48,6 +48,7 @@
                     <p>{{ business.b_phone }}</p>
                     <p>Type: {{ business.b_type }}</p>
                     <p>Status: {{ business.b_status }}</p>
+                    <p>Last check: {{ business.b_date_last_check }}</p>
                     <a :href="business.b_address_link" target="_blank" rel="noopener noreferrer" class="map-link">
                         <img width="32" height="32" src="https://img.icons8.com/ios/32/0f4110/place-marker--v1.png" alt="Map Marker" />
                     </a>

@@ -1,82 +1,46 @@
 [
   {
     "b_id": 1,
-    "b_name": "Ali Baba Bakery",
-    "b_address": "200 Vanguard Dr #7",
-    "b_city": "Orléans",
-    "b_phone": "613 830 7171",
-    "b_type": "Restaurant",
-    "b_status": "Verified",
-    "b_address_link": "https://maps.app.goo.gl/jc83W2QeHz4L8Yn19"
-  },
-  {
-    "b_id": 2,
     "b_name": "Bilal Farms Butcher Shop",
     "b_address": "2953 Carling Ave",
     "b_city": "Ottawa",
     "b_phone": "613 421 1970",
     "b_type": "Butcher",
     "b_status": "Verified",
+    "b_date_last_check": "2025-06-23",
     "b_address_link": "https://maps.app.goo.gl/xMpAR5J9yrLrRTZSA"
   },
   {
-    "b_id": 3,
+    "b_id": 2,
     "b_name": "Bilal Farms Butcher Shop",
     "b_address": "1741 Cyrville Rd Unit C",
     "b_city": "Gloucester",
     "b_phone": "613 421 0509",
     "b_type": "Butcher",
     "b_status": "Verified",
+    "b_date_last_check": "2025-06-23",
     "b_address_link": "https://maps.app.goo.gl/9fXGVoKwLZWnZNLa9"
   },
   {
-    "b_id": 4,
+    "b_id": 3,
     "b_name": "D Spot Dessert Cafe",
     "b_address": "790 Kanata Ave, Unit M1A",
     "b_city": "Kanata",
     "b_phone": "613 599 3828",
     "b_type": "Restaurant",
     "b_status": "Verified",
+    "b_date_last_check": "2025-06-23",
     "b_address_link": "https://maps.app.goo.gl/vtUH3jxpwVH7bNgA9"
   },
   {
-    "b_id": 5,
+    "b_id": 4,
     "b_name": "Kara Mia",
     "b_address": "1910 St. Laurent Blvd Unit 7",
     "b_city": "Ottawa",
     "b_phone": "613 248 0500",
     "b_type": "Restaurant",
     "b_status": "Verified",
+    "b_date_last_check": "2025-06-23",
     "b_address_link": "https://maps.app.goo.gl/HphbrNYSqZZtfbRw9"
-  },
-  {
-    "b_id": 6,
-    "b_name": "Laziz Broast & Mix Grill",
-    "b_address": "1900 Innes Rd",
-    "b_city": "Ottawa",
-    "b_phone": "613 746 6111",
-    "b_type": "Restaurant",
-    "b_status": "Verified",
-    "b_address_link": "https://maps.app.goo.gl/U3eqnmHr95TBiK3M6"
-  },
-  {
-    "b_id": 7,
-    "b_name": "Yaseen Halal Pizza & Bakery",
-    "b_address": "1741 Cyrville Rd",
-    "b_city": "Gloucester",
-    "b_phone": "613 216 4655",
-    "b_type": "Restaurant",
-    "b_status": "Verified",
-    "b_address_link": "https://maps.app.goo.gl/vTmoPswz79kLL3Th6"
-  },
-  {
-    "b_id": 8,
-    "b_name": "Yaseen Halal Pizza & Bakery",
-    "b_address": "1950 Merivale Rd",
-    "b_city": "Nepean",
-    "b_phone": "613 695 2195",
-    "b_type": "Restaurant",
-    "b_status": "Verified",
-    "b_address_link": "https://maps.app.goo.gl/i4dqvHhm3wLRFgPJ6"
   }
 ]
