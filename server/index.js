@@ -1,14 +1,10 @@
 require('dotenv').config(); // Load environment variables from .env file
 
-// In server/index.js
-
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
       ? 'http://38.131.186.164' // Replace with your actual domain
       : '*', // Allow all for local development
   };
-
-
 
 const express = require('express');
 const cors = require('cors');
