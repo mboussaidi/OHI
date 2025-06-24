@@ -7,9 +7,9 @@ const corsOptions = {
       ? 'http://38.131.186.164' // Replace with your actual domain
       : '*', // Allow all for local development
   };
-  
 
-  
+
+
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -17,39 +17,13 @@ const path = require('path');
 const nodemailer = require('nodemailer'); // Import nodemailer
 const helmet = require('helmet'); // Helps secure your app by setting various HTTP headers
 const rateLimit = require('express-rate-limit'); // Basic rate-limiting middleware
+const morgan = require('morgan'); // For HTTP request logging
 const yup = require('yup'); // For robust schema-based validation
 
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors(corsOptions));
-
-app.use(helmet()); // Use helmet to apply security headers
-app.use(express.json());
-
-const dbPath = path.join(__dirname, 'db/businesses.json');
-
-// ✅ Read data from the JSON file
-const getBusinesses = () => {
-    const data = fs.readFileSync(dbPath, 'utf-8');
-    return JSON.parse(data);
-};
-
-// ✅ Write data to the JSON file
-const saveBusinesses = (businesses) => {
-    fs.writeFileSync(dbPath, JSON.stringify(businesses, null, 2), 'utf-8');
-};
-
-// --- Nodemailer Transporter Setup ---
-// Set up Nodemailer transporter using environment variables
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER, // Use environment variable
-        pass: process.env.EMAIL_PASS  // Use environment variable
-    }
-});
-// --- End Nodemailer Transporter Setup ---
 
 // --- Helmet Configuration for Security Headers ---
 const isProduction = process.env.NODE_ENV === 'production';
@@ -99,6 +73,38 @@ app.use(helmet({
     // ... other helmet options can be configured here
 }));
 
+// --- HTTP Request Logging ---
+// Use morgan. 'dev' format for development (colored status codes) and 'combined' for production.
+app.use(morgan(isProduction ? 'combined' : 'dev'));
+
+app.use(express.json());
+
+const dbPath = path.join(__dirname, 'db/businesses.json');
+
+// ✅ Read data from the JSON file
+const getBusinesses = () => {
+    console.log('[DEBUG] Reading from db/businesses.json');
+    const data = fs.readFileSync(dbPath, 'utf-8');
+    return JSON.parse(data);
+};
+
+// ✅ Write data to the JSON file
+const saveBusinesses = (businesses) => {
+    console.log('[DEBUG] Writing to db/businesses.json');
+    fs.writeFileSync(dbPath, JSON.stringify(businesses, null, 2), 'utf-8');
+};
+
+// --- Nodemailer Transporter Setup ---
+// Set up Nodemailer transporter using environment variables
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER, // Use environment variable
+        pass: process.env.EMAIL_PASS  // Use environment variable
+    }
+});
+// --- End Nodemailer Transporter Setup ---
+
 // --- Security Middleware ---
 
 // Rate limiter to prevent brute-force attacks on the contact form
@@ -130,11 +136,12 @@ const contactSchema = yup.object({
 
 // ✅ POST endpoint for contact form submissions
 app.post('/api/contact', contactLimiter, async (req, res) => {
-    console.log(`Server log #####: email preparation started`);
-
     const { name, email, subject, message } = req.body;
+    console.log(`[DEBUG] POST /api/contact - Received submission from: ${name} <${email}>`);
+
     try {
         await contactSchema.validate(req.body, { abortEarly: false });
+        console.log('[DEBUG] POST /api/contact - Validation successful.');
 
          const mailOptions = {
             from: 'ottawahalalinitiative@gmail.com', // Sender address (must be the same as your auth user for some services)
@@ -150,11 +157,12 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log('Contact form email sent successfully.');
+        console.log('[INFO] Contact form email sent successfully.');
         res.status(200).json({ message: 'Message sent successfully!' });
     } catch (error) {
         // Handle validation errors from Yup
         if (error instanceof yup.ValidationError) {
+            console.warn('[WARN] Validation failed for /api/contact:', error.errors);
             return res.status(400).json({ message: 'Validation failed.', errors: error.errors });
         }
         // Handle other errors
@@ -168,9 +176,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 app.get('/api/businesses', (req, res) => {
     const { city, type, status, search } = req.query;
     let businesses = getBusinesses();
-
-
-    console.log(`Server log #####: GET businesses___=${businesses.b_city}`);
+    console.log('[DEBUG] GET /api/businesses - Received filters:', { city, type, status, search });
 
     // Filtering
     if (city) {
@@ -191,14 +197,14 @@ app.get('/api/businesses', (req, res) => {
     }
 
     res.json(businesses);
-    console.log(`Server log: GET /api/businesses?city=${city}&type=${type}&status=${status}&search=${search}`);
-
 });
 
 // ✅ GET business by ID
 app.get('/api/businesses/:id', (req, res) => {
     const businesses = getBusinesses();
     const business = businesses.find(b => b.b_id === parseInt(req.params.id));
+
+    console.log(`[DEBUG] GET /api/businesses/:id - Searching for ID: ${req.params.id}`);
 
     if (!business) {
         return res.status(404).send('Business not found');
@@ -210,10 +216,13 @@ app.get('/api/businesses/:id', (req, res) => {
 // ✅ POST - Add a new business
 app.post('/api/businesses', apiKeyAuth, (req, res) => {
     const businesses = getBusinesses();
+    const maxId = businesses.reduce((max, b) => (b.b_id > max ? b.b_id : max), 0);
     const newBusiness = {
-        b_id: businesses.length + 1,
+        b_id: maxId + 1,
         ...req.body
     };
+
+    console.log('[DEBUG] POST /api/businesses - Creating new business:', newBusiness);
 
     businesses.push(newBusiness);
     saveBusinesses(businesses);
@@ -225,6 +234,8 @@ app.post('/api/businesses', apiKeyAuth, (req, res) => {
 app.put('/api/businesses/:id', apiKeyAuth, (req, res) => {
     const businesses = getBusinesses();
     const businessIndex = businesses.findIndex(b => b.b_id === parseInt(req.params.id));
+
+    console.log(`[DEBUG] PUT /api/businesses/:id - Updating business ID ${req.params.id} with data:`, req.body);
 
     if (businessIndex === -1) {
         return res.status(404).send('Business not found');
@@ -243,6 +254,8 @@ app.put('/api/businesses/:id', apiKeyAuth, (req, res) => {
 app.delete('/api/businesses/:id', apiKeyAuth, (req, res) => {
     let businesses = getBusinesses();
     const filteredBusinesses = businesses.filter(b => b.b_id !== parseInt(req.params.id));
+
+    console.log(`[DEBUG] DELETE /api/businesses/:id - Deleting business ID: ${req.params.id}`);
 
     if (filteredBusinesses.length === businesses.length) {
         return res.status(404).send('Business not found');
