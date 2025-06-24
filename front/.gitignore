@@ -32,3 +32,6 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+
+
+src/App.vue.js
