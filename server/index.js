@@ -1,3 +1,5 @@
+require('dotenv').config(); // Load environment variables from .env file
+
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -5,7 +7,7 @@ const path = require('path');
 const nodemailer = require('nodemailer'); // Import nodemailer
 
 const app = express();
-const PORT = process.env.PORT || 3009;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
@@ -24,13 +26,12 @@ const saveBusinesses = (businesses) => {
 };
 
 // --- Nodemailer Transporter Setup ---
-// Configure your email service details.
-// You'll likely want to use environment variables for security.
+// Set up Nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Example: 'gmail'. You can use other services or direct SMTP.
+    service: 'gmail',
     auth: {
-        user: 'ottawahalalinitiative@gmail.com', // Your email address
-        pass: 'zlpycjjunestpkvo' // Your email app password or regular password (less secure)
+        user: process.env.EMAIL_USER, // Use environment variable
+        pass: process.env.EMAIL_PASS  // Use environment variable
     }
 });
 // --- End Nodemailer Transporter Setup ---
@@ -47,7 +48,7 @@ app.post('/api/contact', async (req, res) => {
     }
 
     try {
-        const mailOptions = {
+         const mailOptions = {
             from: 'ottawahalalinitiative@gmail.com', // Sender address (must be the same as your auth user for some services)
             to: 'ottawahalalinitiative@gmail.com', // Your email address where you want to receive requests
             subject: `New Contact Form Submission: ${subject}`,
