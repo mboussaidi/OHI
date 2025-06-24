@@ -3,7 +3,6 @@
 /dist
 /build
 .env
-server/.env
 .env.*.local
 .yarn-integrity
 npm-debug.log
