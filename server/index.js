@@ -1,15 +1,30 @@
 require('dotenv').config(); // Load environment variables from .env file
 
+// In server/index.js
+
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+      ? 'http://38.131.186.164' // Replace with your actual domain
+      : '*', // Allow all for local development
+  };
+  
+
+  
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer'); // Import nodemailer
+const helmet = require('helmet'); // Helps secure your app by setting various HTTP headers
+const rateLimit = require('express-rate-limit'); // Basic rate-limiting middleware
+const yup = require('yup'); // For robust schema-based validation
 
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors());
+app.use(cors(corsOptions));
+
+app.use(helmet()); // Use helmet to apply security headers
 app.use(express.json());
 
 const dbPath = path.join(__dirname, 'db/businesses.json');
@@ -36,18 +51,91 @@ const transporter = nodemailer.createTransport({
 });
 // --- End Nodemailer Transporter Setup ---
 
+// --- Helmet Configuration for Security Headers ---
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Content-Security-Policy directives
+const cspDirectives = {
+    defaultSrc: ["'self'"],
+    // 'unsafe-inline' and 'unsafe-eval' are often needed for development with Vue/Vite
+    // For production, you should aim to remove these and use hashes/nonces or a stricter policy.
+    scriptSrc: ["'self'", isProduction ? null : "'unsafe-inline'", isProduction ? null : "'unsafe-eval'"].filter(Boolean),
+    styleSrc: ["'self'", isProduction ? null : "'unsafe-inline'"].filter(Boolean),
+    imgSrc: ["'self'", "data:", "https:"], // Allow images from self, data URIs, and HTTPS
+    // Allow connections to your own API. Adjust for production domain.
+    connectSrc: ["'self'", isProduction ? 'http://38.131.186.164' : 'http://localhost:3009'],
+    fontSrc: ["'self'", "https:"], // Allow fonts from self and HTTPS
+    objectSrc: ["'none'"], // Disallow <object>, <embed>, <applet>
+    mediaSrc: ["'self'"],
+    frameSrc: ["'self'"],
+    // Consider adding 'report-uri' or 'report-to' for CSP violation reporting in production
+};
+
+app.use(helmet({
+    // Content-Security-Policy: Protects against XSS and data injection attacks
+    contentSecurityPolicy: {
+        directives: cspDirectives,
+    },
+    // X-Frame-Options: SAMEORIGIN - Protects against clickjacking
+    frameguard: { action: 'sameorigin' },
+    // X-Content-Type-Options: nosniff - Prevents MIME-sniffing
+    noSniff: true,
+    // Referrer-Policy: Controls how much referrer information is sent
+    referrerPolicy: { policy: isProduction ? 'no-referrer' : 'no-referrer-when-downgrade' },
+    // Permissions-Policy: Controls browser features and APIs
+    permissionsPolicy: {
+        features: {
+            geolocation: ['self'], // Allow geolocation only from same origin
+            microphone: [], // Disallow microphone
+            camera: [], // Disallow camera
+            fullscreen: ['self'], // Allow fullscreen only from same origin
+            // Add or remove features as needed for your application
+            // Example: 'payment': ['self', 'https://payment.provider.com']
+        },
+    },
+    // Other useful Helmet middlewares (many are enabled by default)
+    hidePoweredBy: true, // Removes the X-Powered-By header
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }, // Strict-Transport-Security for HTTPS
+    // ... other helmet options can be configured here
+}));
+
+// --- Security Middleware ---
+
+// Rate limiter to prevent brute-force attacks on the contact form
+const contactLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 20, // Limit each IP to 10 requests per windowMs
+	standardHeaders: true,
+	legacyHeaders: false,
+	message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+
+// Middleware to check for a valid API key
+const apiKeyAuth = (req, res, next) => {
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey && apiKey === process.env.API_KEY) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
+    }
+};
+
+// Validation schema for the contact form
+const contactSchema = yup.object({
+    name: yup.string().trim().required('Name is required.'),
+    email: yup.string().email('Must be a valid email.').required('Email is required.'),
+    subject: yup.string().trim().required('Subject is required.'),
+    message: yup.string().trim().required('Message is required.').min(10, 'Message must be at least 10 characters long.'),
+});
 
 // ✅ POST endpoint for contact form submissions
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', contactLimiter, async (req, res) => {
     console.log(`Server log #####: email preparation started`);
 
     const { name, email, subject, message } = req.body;
-
-    if (!name || !email || !subject || !message) {
-        return res.status(400).json({ message: 'All fields are required.' });
-    }
-
     try {
+        await contactSchema.validate(req.body, { abortEarly: false });
+
          const mailOptions = {
             from: 'ottawahalalinitiative@gmail.com', // Sender address (must be the same as your auth user for some services)
             to: 'ottawahalalinitiative@gmail.com', // Your email address where you want to receive requests
@@ -65,6 +153,11 @@ app.post('/api/contact', async (req, res) => {
         console.log('Contact form email sent successfully.');
         res.status(200).json({ message: 'Message sent successfully!' });
     } catch (error) {
+        // Handle validation errors from Yup
+        if (error instanceof yup.ValidationError) {
+            return res.status(400).json({ message: 'Validation failed.', errors: error.errors });
+        }
+        // Handle other errors
         console.error('Error sending contact form email:', error);
         res.status(500).json({ message: 'Failed to send message.', error: error.message });
     }
@@ -115,7 +208,7 @@ app.get('/api/businesses/:id', (req, res) => {
 });
 
 // ✅ POST - Add a new business
-app.post('/api/businesses', (req, res) => {
+app.post('/api/businesses', apiKeyAuth, (req, res) => {
     const businesses = getBusinesses();
     const newBusiness = {
         b_id: businesses.length + 1,
@@ -129,7 +222,7 @@ app.post('/api/businesses', (req, res) => {
 });
 
 // ✅ PUT - Update a business by ID
-app.put('/api/businesses/:id', (req, res) => {
+app.put('/api/businesses/:id', apiKeyAuth, (req, res) => {
     const businesses = getBusinesses();
     const businessIndex = businesses.findIndex(b => b.b_id === parseInt(req.params.id));
 
@@ -147,7 +240,7 @@ app.put('/api/businesses/:id', (req, res) => {
 });
 
 // ✅ DELETE - Remove a business by ID
-app.delete('/api/businesses/:id', (req, res) => {
+app.delete('/api/businesses/:id', apiKeyAuth, (req, res) => {
     let businesses = getBusinesses();
     const filteredBusinesses = businesses.filter(b => b.b_id !== parseInt(req.params.id));
 
