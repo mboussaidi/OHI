@@ -31,7 +31,7 @@ const cspDirectives = {
     // For production, you should aim to remove these and use hashes/nonces or a stricter policy.
     scriptSrc: ["'self'", isProduction ? null : "'unsafe-inline'", isProduction ? null : "'unsafe-eval'"].filter(Boolean),
     styleSrc: ["'self'", isProduction ? null : "'unsafe-inline'"].filter(Boolean),
-    imgSrc: ["'self'", "data:", "https:"], // Allow images from self, data URIs, and HTTPS
+    imgSrc: ["'self'", "data:", "https://img.icons8.com"], // Allow images from self, data URIs, and icons8.com
     // Allow connections to your own API. Adjust for production domain.
     connectSrc: ["'self'", isProduction ? 'http://38.131.186.164' : 'http://localhost:3009'],
     fontSrc: ["'self'", "https:"], // Allow fonts from self and HTTPS
