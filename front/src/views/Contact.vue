@@ -11,6 +11,19 @@
         </div>
 
         <div class="contact-container">
+            <v-snackbar
+                v-model="snackbar.show"
+                :color="snackbar.color"
+                :timeout="6000"    
+                location="top center"
+            >
+                <div v-html="snackbar.message"></div>
+                <template v-slot:actions>
+                    <v-btn variant="text" @click="snackbar.show = false">
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
             <form @submit.prevent="submitForm">
                 <div class="form-group">
                     <label for="name">Your Name</label>
@@ -49,12 +62,26 @@ const formData = ref({
     message: ''
 });
 
+// Define a reactive object for the snackbar
+const snackbar = ref({
+    show: false,
+    color: 'success', // 'success' or 'error'
+    message: ''
+});
+
 const submitForm = async () => {
+    snackbar.value.show = false; // Hide previous snackbars
     try {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/contact`;
         const response = await axios.post(apiUrl, formData.value);
         console.log('Form submitted successfully:', response.data);
-        alert('Thank you for your message! We will get back to you within 2 to 3 business days InshaAllah');
+
+        snackbar.value = {
+            show: true,
+            color: 'success',
+            message: 'Thank you for your message! <br>We will get back to you within 2 to 3 business days InshaAllah'
+        };
+
         // Optionally clear the form after successful submission
         formData.value = {
             name: '',
@@ -64,7 +91,13 @@ const submitForm = async () => {
         };
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('There was an error sending your message. Please try again later. We apologize for this inconvenience');
+        let errorMessage = 'There was an error sending your message. Please try again later. We apologize for this inconvenience.';
+        if (error.response?.data?.errors) {
+            errorMessage = error.response.data.errors.join(' ');
+        } else if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+        }
+        snackbar.value = { show: true, color: 'error', message: errorMessage };
     }
 };
 </script>
