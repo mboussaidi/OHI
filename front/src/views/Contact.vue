@@ -54,7 +54,7 @@ const submitForm = async () => {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/contact`;
         const response = await axios.post(apiUrl, formData.value);
         console.log('Form submitted successfully:', response.data);
-        alert('Your message has been sent successfully!');
+        alert('Thank you for your message! We will get back to you within 2 to 3 business days InshaAllah');
         // Optionally clear the form after successful submission
         formData.value = {
             name: '',
@@ -64,7 +64,7 @@ const submitForm = async () => {
         };
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('There was an error sending your message. Please try again later.');
+        alert('There was an error sending your message. Please try again later. We apologize for this inconvenience');
     }
 };
 </script>
