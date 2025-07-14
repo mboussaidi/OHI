@@ -75,6 +75,107 @@ app.use(morgan(isProduction ? 'combined' : 'dev'));
 
 app.use(express.json());
 
+// --- User Authentication ---
+
+// In-memory store for OTPs. In a production app, use a database or Redis.
+const otpStore = {};
+
+// Path to the users database
+const usersDbPath = path.join(__dirname, 'db/users.json');
+
+// ✅ Read users from the JSON file
+const getUsersFromFile = () => {
+    try {
+        console.log('[DEBUG] Reading from db/users.json');
+        const data = fs.readFileSync(usersDbPath, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('[ERROR] Could not read users.json:', error);
+        return []; // Return empty array on error
+    }
+};
+
+// ✅ POST /api/login - User Login
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+    console.log(`[DEBUG] POST /api/login - Attempting login for: ${email}`);
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
+    const users = getUsersFromFile();
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        // Generate a 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Store OTP with a 10-minute expiry
+        otpStore[email] = {
+            otp,
+            expires: Date.now() + 10 * 60 * 1000, // 10 minutes from now
+        };
+
+        console.log(`[INFO] Login successful for ${email}. Generated OTP: ${otp}`);
+
+        // --- Send OTP Email ---
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Your One-Time Password (OTP)',
+            html: `
+                <p>Hello ${user.firstname},</p>
+                <p>Your One-Time Password (OTP) for Ottawa Halal Initiative is:</p>
+                <h2 style="text-align:center; letter-spacing: 2px;">${otp}</h2>
+                <p>This code will expire in 10 minutes.</p>
+                <p>If you did not request this, please ignore this email.</p>
+            `
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`[INFO] OTP email sent successfully to ${email}.`);
+            res.status(200).json({ message: 'Login successful! OTP has been sent to your email.' });
+        } catch (error) {
+            console.error(`[ERROR] Failed to send OTP email to ${email}:`, error);
+            res.status(500).json({ message: 'Failed to send OTP. Please try again later.' });
+        }
+    } else {
+        console.warn(`[WARN] Login failed for ${email}`);
+        res.status(401).json({ message: 'Invalid email or password.' });
+    }
+});
+
+// ✅ POST /api/verify-otp - Verify the OTP
+app.post('/api/verify-otp', (req, res) => {
+    const { email, otp } = req.body;
+    console.log(`[DEBUG] POST /api/verify-otp - Verifying OTP for: ${email}`);
+
+    if (!email || !otp) {
+        return res.status(400).json({ message: 'Email and OTP are required.' });
+    }
+
+    const storedOtpData = otpStore[email];
+
+    if (!storedOtpData || Date.now() > storedOtpData.expires || storedOtpData.otp !== otp) {
+        if (storedOtpData && Date.now() > storedOtpData.expires) {
+            delete otpStore[email]; // Clean up expired OTP
+            return res.status(400).json({ message: 'OTP has expired. Please try logging in again.' });
+        }
+        console.warn(`[WARN] Invalid OTP attempt for ${email}.`);
+        return res.status(400).json({ message: 'The OTP you entered is incorrect.' });
+    }
+
+    delete otpStore[email]; // OTP is used, so remove it
+    console.log(`[INFO] OTP verification successful for ${email}.`);
+    // In a real app, you would generate and return a JWT. For now, we'll create a simple mock token.
+    const mockToken = `mock-jwt-for-${email}-${Date.now()}`;
+    res.status(200).json({
+        message: 'Verification successful! You are now logged in.',
+        token: mockToken
+    });
+});
+
 const dbPath = path.join(__dirname, 'db/businesses.json');
 
 // ✅ Read data from the JSON file
@@ -112,13 +213,17 @@ const contactLimiter = rateLimit({
 	message: 'Too many requests from this IP, please try again after 15 minutes',
 });
 
-// Middleware to check for a valid API key
-const apiKeyAuth = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'];
-    if (apiKey && apiKey === process.env.API_KEY) {
+// A mock authentication middleware. In a real app, this would validate a JWT.
+const userAuth = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Expects "Bearer <token>"
+    if (token && token.startsWith('mock-jwt-for-')) {
+        // For this demo, we'll just check if the token looks like our mock token.
+        // A real app would verify the token's signature and expiration.
+        console.log('[AUTH] User authenticated with mock token.');
         next();
     } else {
-        res.status(401).json({ message: 'Unauthorized: Invalid API Key' });
+        res.status(401).json({ message: 'Unauthorized: Invalid or missing token' });
     }
 };
 
@@ -140,8 +245,8 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
         console.log('[DEBUG] POST /api/contact - Validation successful.');
 
          const mailOptions = {
-            from: 'ottawahalalinitiative@gmail.com', // Sender address (must be the same as your auth user for some services)
-            to: 'ottawahalalinitiative@gmail.com', // Your email address where you want to receive requests
+            from: process.env.EMAIL_USER, // Sender address (must be the same as your auth user for some services)
+            to: process.env.EMAIL_USER, // Your email address where you want to receive requests
             subject: `New Contact Form Submission: ${subject}`,
             html: `
                 <p><strong>Name:</strong> ${name}</p>
@@ -210,7 +315,7 @@ app.get('/api/businesses/:id', (req, res) => {
 });
 
 // ✅ POST - Add a new business
-app.post('/api/businesses', apiKeyAuth, (req, res) => {
+app.post('/api/businesses', userAuth, (req, res) => {
     const businesses = getBusinesses();
     const maxId = businesses.reduce((max, b) => (b.b_id > max ? b.b_id : max), 0);
     const newBusiness = {
@@ -227,7 +332,7 @@ app.post('/api/businesses', apiKeyAuth, (req, res) => {
 });
 
 // ✅ PUT - Update a business by ID
-app.put('/api/businesses/:id', apiKeyAuth, (req, res) => {
+app.put('/api/businesses/:id', userAuth, (req, res) => {
     const businesses = getBusinesses();
     const businessIndex = businesses.findIndex(b => b.b_id === parseInt(req.params.id));
 
@@ -247,7 +352,7 @@ app.put('/api/businesses/:id', apiKeyAuth, (req, res) => {
 });
 
 // ✅ DELETE - Remove a business by ID
-app.delete('/api/businesses/:id', apiKeyAuth, (req, res) => {
+app.delete('/api/businesses/:id', userAuth, (req, res) => {
     let businesses = getBusinesses();
     const filteredBusinesses = businesses.filter(b => b.b_id !== parseInt(req.params.id));
 

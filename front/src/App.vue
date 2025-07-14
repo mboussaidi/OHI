@@ -23,6 +23,7 @@ export default defineComponent({
                             <router-link to="/halal">Halal</router-link>
                             <router-link to="/listings">Listings</router-link>
                             <router-link to="/contact">Contact</router-link>
+                            <router-link to="/login">Login</router-link>
                         </nav>
                     </header>
                     <div class="black-gradient"></div>

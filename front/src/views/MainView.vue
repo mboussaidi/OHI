@@ -26,7 +26,7 @@
         </div>
     
         <div class="right-section">
-            <img src="/public/img/food-img-001.jpg" alt="" />
+            <img src="/img/food-img-001.jpg" alt="" />
         </div>
     </div>
     

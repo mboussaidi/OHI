@@ -32,11 +32,27 @@
             <div v-for="(business, index) in paginatedBusinesses" :key="business.b_id" class="business-card fade-in" :style="{ animationDelay: `${index * 0.15}s` }">
 
                 <div class="card-header">
-                    <img v-if="business.b_status === 'Verified'" width="48" height="48" src="https://img.icons8.com/color/48/approval--v1.png" alt="VerifiedLogo" class="business-logo" />
-                    <img v-else-if="business.b_fielda === 'Machine Slaughtered'" width="48" height="48" src="https://img.icons8.com/emoji/48/warning-emoji.png" alt="warning-emoji" class="business-logo" />
-                    <img v-else-if="business.b_fielda === 'Unknown'" width="48" height="48" src="https://img.icons8.com/emoji/48/warning-emoji.png" alt="warning-emoji" class="business-logo" />
-                    <img v-else width="48" height="48" src="https://img.icons8.com/external-febrian-hidayat-glyph-febrian-hidayat/48/1A1A1A/external-exclamation-mark-ui-essential-febrian-hidayat-glyph-febrian-hidayat.png" alt="external-exclamation-mark" class="business-logo"
-                    />
+                    <v-icon
+                      v-if="business.b_status === 'Verified'"
+                      color="success"
+                      icon="mdi-check-circle"
+                      size="x-large"
+                      class="business-logo"
+                    ></v-icon>
+                    <v-icon
+                      v-else-if="business.b_status === 'Machine Slaughtered'"
+                      color="warning"
+                      icon="mdi-alert"
+                      size="x-large"
+                      class="business-logo"
+                    ></v-icon>
+                    <v-icon
+                      v-else
+                      color="error"
+                      icon="mdi-alert-circle"
+                      size="x-large"
+                      class="business-logo"
+                    ></v-icon>
                 </div>
 
                 <div class="card-title">
@@ -50,7 +66,7 @@
                     <p>Status: {{ business.b_status }}</p>
                     <p>Last check: {{ business.b_date_last_check }}</p>
                     <a :href="business.b_address_link" target="_blank" rel="noopener noreferrer" class="map-link">
-                        <img width="32" height="32" src="https://img.icons8.com/ios/32/0f4110/place-marker--v1.png" alt="Map Marker" />
+                        <v-icon color="green" size="x-large">mdi-map-marker</v-icon>
                     </a>
                 </div>
             </div>
