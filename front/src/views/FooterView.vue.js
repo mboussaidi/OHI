@@ -22,3 +22,4 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.strong, __VLS_intrinsicElement
 /** @type {__VLS_StyleScopedClasses['opacity-60']} */ ;
 var __VLS_dollars;
 let __VLS_self;
+//# sourceMappingURL=FooterView.vue.js.map
