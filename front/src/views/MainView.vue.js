@@ -4,6 +4,8 @@ export default defineComponent({
     name: 'MainView',
     setup() {
         const router = useRouter();
+        // Example of using the environment variable
+        console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
         const goToListings = () => {
             router.push('/listings');
         };
@@ -16,7 +18,6 @@ debugger; /* PartiallyEnd: #3632/script.vue */
 const __VLS_ctx = {};
 let __VLS_components;
 let __VLS_directives;
-/** @type {__VLS_StyleScopedClasses['redirect-button']} */ ;
 // CSS variable injection 
 // CSS variable injection end 
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
@@ -51,14 +52,14 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.h2, __VLS_intrinsicElements.h2
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "description-section-home" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.p, __VLS_intrinsicElements.p)({});
-__VLS_asFunctionalElement(__VLS_intrinsicElements.p, __VLS_intrinsicElements.p)({});
-__VLS_asFunctionalElement(__VLS_intrinsicElements.p, __VLS_intrinsicElements.p)({});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({});
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "right-section" },
 });
 __VLS_asFunctionalElement(__VLS_intrinsicElements.img)({
-    src: "/public/img/food-img-001.jpg",
+    src: "/img/food-img-001.jpg",
     alt: "",
 });
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
@@ -78,3 +79,4 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.d
 /** @type {__VLS_StyleScopedClasses['section-home-recentlisting']} */ ;
 var __VLS_dollars;
 let __VLS_self;
+//# sourceMappingURL=MainView.vue.js.map

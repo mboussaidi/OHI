@@ -85,68 +85,72 @@
     </div>
 </template>
 
-<script>
-    import axios from 'axios';
-    
-    export default {
-        data() {
-            return {
-                businesses: [],
-                selectedCategory: '',
-                selectedCity: '',
-                searchTerm: '',
-                cities: ["Barrhaven","Clarence Creek","Gatineau","Gloucester","Greely","Kanata","Manotick","Nepean","Orléans","Ottawa","Rockland","Stittsville"],
-                currentPage: 1,
-                itemsPerPage: 6
-            };
-        },
-        computed: {
-            totalPages() {
-                return Math.ceil(this.businesses.length / this.itemsPerPage);
-            },
-    
-            paginatedBusinesses() {
-                const start = (this.currentPage - 1) * this.itemsPerPage;
-                const end = start + this.itemsPerPage;
-                return this.businesses.slice(start, end);
+<script lang="ts" setup>
+import { ref, computed, onMounted } from 'vue';
+import apiClient from '@/plugins/axios';
+
+interface Business {
+  b_id: number;
+  b_name: string;
+  b_address: string;
+  b_city: string;
+  b_type: string;
+  b_status: string;
+  b_date_last_check: string;
+  b_address_link: string;
+  b_phone: string;
+  b_fielda: string; // Assuming this field might still be used
+}
+
+const businesses = ref<Business[]>([]);
+const selectedCategory = ref('');
+const selectedCity = ref('');
+const searchTerm = ref('');
+const cities = ["Barrhaven", "Clarence Creek", "Gatineau", "Gloucester", "Greely", "Kanata", "Manotick", "Nepean", "Orléans", "Ottawa", "Rockland", "Stittsville"];
+const currentPage = ref(1);
+const itemsPerPage = 6;
+
+const totalPages = computed(() => Math.ceil(businesses.value.length / itemsPerPage));
+
+const paginatedBusinesses = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return businesses.value.slice(start, end);
+});
+
+async function fetchBusinesses() {
+    try {
+        const response = await apiClient.get('/api/businesses', {
+            params: {
+                city: selectedCity.value,
+                type: selectedCategory.value,
+                search: searchTerm.value
             }
-        },
-        methods: {
-            async fetchBusinesses() {
-                try {
-                    const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/businesses`;
-                    const response = await axios.get(apiUrl, {
-                        params: {
-                            city: this.selectedCity,
-                            type: this.selectedCategory,
-                            search: this.searchTerm
-                        }
-                    });
-                    this.businesses = response.data;
-                    this.currentPage = 1; 
-                } catch (error) {
-                    console.error('Error fetching businesses:', error);
-                }
-            },
-    
-            nextPage() {
-                if (this.currentPage < this.totalPages) {
-                    this.currentPage++;
-                    window.scrollTo(0, 0);
-                }
-            },
-    
-            prevPage() {
-                if (this.currentPage > 1) {
-                    this.currentPage--;
-                    window.scrollTo(0, 0);
-                }
-            }
-        },
-        mounted() {
-            this.fetchBusinesses();
-        }
-    };
+        });
+        businesses.value = response.data;
+        currentPage.value = 1;
+    } catch (error) {
+        console.error('Error fetching businesses:', error);
+    }
+}
+
+function nextPage() {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+        window.scrollTo(0, 0);
+    }
+}
+
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+        window.scrollTo(0, 0);
+    }
+}
+
+onMounted(() => {
+    fetchBusinesses();
+});
 </script>
 
 <style scoped>

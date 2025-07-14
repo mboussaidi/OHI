@@ -227,7 +227,7 @@ const headers = [
   { title: 'Status', key: 'b_status' },
   { title: 'Map', key: 'b_address_link', sortable: false, align: 'center' },
   { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
-];
+] as const;
 
 // Modal state
 const showModal = ref(false);
