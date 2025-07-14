@@ -42,5 +42,71 @@
     "b_status": "Verified",
     "b_date_last_check": "2025-06-23",
     "b_address_link": "https://maps.app.goo.gl/HphbrNYSqZZtfbRw9"
+  },
+  {
+    "b_id": 5,
+    "b_name": "#TEST# Lokma-TEST",
+    "b_address": "2208 St Joseph Blvd unit 107",
+    "b_city": "Orléans",
+    "b_type": "Restaurant",
+    "b_status": "Pending",
+    "b_date_last_check": "2025-07-06",
+    "b_phone": "6138681313",
+    "b_address_link": "https://maps.app.goo.gl/5DTnTXv7aHd9syV39"
+  },
+  {
+    "b_id": 6,
+    "b_name": "#TEST# AMINE-TEST-Business",
+    "b_address": "200 Harvest Valley Ave",
+    "b_city": "Kanata",
+    "b_type": "Butcher",
+    "b_phone": "8902233321",
+    "b_status": "Pending",
+    "b_date_last_check": "2025-07-13",
+    "b_address_link": "https://maps.app.goo.gl/5DTnTXv7aHd9syV39"
+  },
+  {
+    "b_id": 8,
+    "b_name": "#TEST# New business",
+    "b_address": "4044 Bank Street",
+    "b_city": "Ottawa",
+    "b_type": "Restaurant",
+    "b_phone": "613-234-5552",
+    "b_status": "Verified",
+    "b_date_last_check": "2025-07-13",
+    "b_address_link": "https://maps.app.goo.gl/ykf5DbwuvT87zhDb7"
+  },
+  {
+    "b_id": 9,
+    "b_name": "#TEST# Business Test Pasta",
+    "b_address": "545 Silvermoon Crescent",
+    "b_city": "Bearhaven",
+    "b_type": "Restaurant",
+    "b_phone": "613-029-8433",
+    "b_status": "Verified",
+    "b_date_last_check": "2025-07-14",
+    "b_address_link": ""
+  },
+  {
+    "b_id": 10,
+    "b_name": "#TEST# Grill Test",
+    "b_address": "812 Grill road",
+    "b_city": "Greely",
+    "b_type": "Restaurant",
+    "b_phone": "613-878-9944",
+    "b_status": "Verified",
+    "b_date_last_check": "2025-07-14",
+    "b_address_link": ""
+  },
+  {
+    "b_id": 11,
+    "b_name": "#TEST# Restaurant test",
+    "b_address": "122 Bank Street",
+    "b_city": "Ottawa",
+    "b_type": "Butcher",
+    "b_phone": "613-920-9983",
+    "b_status": "Verified",
+    "b_date_last_check": "2025-07-14",
+    "b_address_link": ""
   }
 ]

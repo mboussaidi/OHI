@@ -1,0 +1,47 @@
+[
+    {
+      "id": 1,
+      "firstname": "Mohamed",
+      "lastname": "Boussaidi",
+      "email": "boussaidiamine@gmail.com",
+      "password": "password",
+      "lastconnection": "2025-05-10T14:30:00Z",
+      "activeuse": true
+    },
+    {
+      "id": 2,
+      "firstname": "Maria",
+      "lastname": "Garcia",
+      "email": "maria.garcia@example.com",
+      "password": "mg_TopSecret#24",
+      "lastconnection": "2024-04-22T09:15:10Z",
+      "activeuse": false
+    },
+    {
+      "id": 3,
+      "firstname": "Chen",
+      "lastname": "Wei",
+      "email": "chen.wei@example.com",
+      "password": "cw_P@ssw0rdPro",
+      "lastconnection": "2024-05-21T18:05:45Z",
+      "activeuse": true
+    },
+    {
+      "id": 4,
+      "firstname": "Samantha",
+      "lastname": "Miller",
+      "email": "samantha.miller@example.com",
+      "password": "sm_ChangeMe!Soon",
+      "lastconnection": "2023-12-18T23:50:00Z",
+      "activeuse": true
+    },
+    {
+      "id": 5,
+      "firstname": "David",
+      "lastname": "Smith",
+      "email": "david.smith@example.com",
+      "password": "ds_!nterestingPa$$",
+      "lastconnection": "2024-01-05T07:00:12Z",
+      "activeuse": false
+    }
+  ]
