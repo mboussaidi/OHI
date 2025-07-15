@@ -1,28 +1,61 @@
 require('dotenv').config(); // Load environment variables from .env file
 
-const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-      ? 'http://38.131.186.164' // Replace with your actual domain
-      : '*', // Allow all for local development
-  };
-
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer'); // Import nodemailer
+const winston = require('winston');
 const helmet = require('helmet'); // Helps secure your app by setting various HTTP headers
 const rateLimit = require('express-rate-limit'); // Basic rate-limiting middleware
 const morgan = require('morgan'); // For HTTP request logging
 const yup = require('yup'); // For robust schema-based validation
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3009;
+
+const allowedOrigins = [
+  process.env.FRONTEND_DEV_URL,
+  process.env.FRONTEND_PROD_URL,
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl) or from our whitelist
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  optionsSuccessStatus: 200,
+};
 
 app.use(cors(corsOptions));
 
-// --- Helmet Configuration for Security Headers ---
+// --- Logger Configuration (Winston) ---
 const isProduction = process.env.NODE_ENV === 'production';
+
+const logger = winston.createLogger({
+  level: isProduction ? 'info' : 'debug', // Log only 'info' and above in prod
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    // In production, write logs to files
+    // - Write all logs with importance level of `error` or less to `error.log`
+    // - Write all logs with importance level of `info` or less to `combined.log`
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
+
+if (!isProduction) {
+  logger.add(new winston.transports.Console({ format: winston.format.simple() }));
+}
+
+// --- Helmet Configuration for Security Headers ---
 
 // Content-Security-Policy directives
 const cspDirectives = {
@@ -33,7 +66,7 @@ const cspDirectives = {
     styleSrc: ["'self'", isProduction ? null : "'unsafe-inline'"].filter(Boolean),
     imgSrc: ["'self'", "data:", "https://img.icons8.com"], // Allow images from self, data URIs, and icons8.com
     // Allow connections to your own API. Adjust for production domain.
-    connectSrc: ["'self'", isProduction ? 'http://38.131.186.164' : 'http://localhost:3009'],
+    connectSrc: ["'self'"], // Nginx proxy makes this a same-origin request
     fontSrc: ["'self'", "https:"], // Allow fonts from self and HTTPS
     objectSrc: ["'none'"], // Disallow <object>, <embed>, <applet>
     mediaSrc: ["'self'"],
@@ -86,19 +119,19 @@ const usersDbPath = path.join(__dirname, 'db/users.json');
 // ✅ Read users from the JSON file
 const getUsersFromFile = () => {
     try {
-        console.log('[DEBUG] Reading from db/users.json');
+        // console.log('[DEBUG] Reading from db/users.json');
         const data = fs.readFileSync(usersDbPath, 'utf-8');
         return JSON.parse(data);
     } catch (error) {
-        console.error('[ERROR] Could not read users.json:', error);
-        return []; // Return empty array on error
+        logger.error('Could not read users.json', { error: error.message });
+        return []; // Return empty array
     }
 };
 
 // ✅ POST /api/login - User Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
-    console.log(`[DEBUG] POST /api/login - Attempting login for: ${email}`);
+    // console.log(`[DEBUG] POST /api/login - Attempting login for: ${email}`);
 
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
@@ -116,7 +149,7 @@ app.post('/api/login', async (req, res) => {
             expires: Date.now() + 10 * 60 * 1000, // 10 minutes from now
         };
 
-        console.log(`[INFO] Login successful for ${email}. Generated OTP: ${otp}`);
+        // console.log(`[INFO] Login successful for ${email}. Generated OTP: ${otp}`);
 
         // --- Send OTP Email ---
         const mailOptions = {
@@ -134,10 +167,10 @@ app.post('/api/login', async (req, res) => {
 
         try {
             await transporter.sendMail(mailOptions);
-            console.log(`[INFO] OTP email sent successfully to ${email}.`);
+            // console.log(`[INFO] OTP email sent successfully to ${email}.`);
             res.status(200).json({ message: 'Login successful! OTP has been sent to your email.' });
         } catch (error) {
-            console.error(`[ERROR] Failed to send OTP email to ${email}:`, error);
+            logger.error(`Failed to send OTP email to ${email}`, { error: error.message });
             res.status(500).json({ message: 'Failed to send OTP. Please try again later.' });
         }
     } else {
@@ -149,7 +182,7 @@ app.post('/api/login', async (req, res) => {
 // ✅ POST /api/verify-otp - Verify the OTP
 app.post('/api/verify-otp', (req, res) => {
     const { email, otp } = req.body;
-    console.log(`[DEBUG] POST /api/verify-otp - Verifying OTP for: ${email}`);
+    // console.log(`[DEBUG] POST /api/verify-otp - Verifying OTP for: ${email}`);
 
     if (!email || !otp) {
         return res.status(400).json({ message: 'Email and OTP are required.' });
@@ -167,7 +200,7 @@ app.post('/api/verify-otp', (req, res) => {
     }
 
     delete otpStore[email]; // OTP is used, so remove it
-    console.log(`[INFO] OTP verification successful for ${email}.`);
+    // console.log(`[INFO] OTP verification successful for ${email}.`);
     // In a real app, you would generate and return a JWT. For now, we'll create a simple mock token.
     const mockToken = `mock-jwt-for-${email}-${Date.now()}`;
     res.status(200).json({
@@ -180,14 +213,14 @@ const dbPath = path.join(__dirname, 'db/businesses.json');
 
 // ✅ Read data from the JSON file
 const getBusinesses = () => {
-    console.log('[DEBUG] Reading from db/businesses.json');
+    // console.log('[DEBUG] Reading from db/businesses.json');
     const data = fs.readFileSync(dbPath, 'utf-8');
     return JSON.parse(data);
 };
 
 // ✅ Write data to the JSON file
 const saveBusinesses = (businesses) => {
-    console.log('[DEBUG] Writing to db/businesses.json');
+    // console.log('[DEBUG] Writing to db/businesses.json');
     fs.writeFileSync(dbPath, JSON.stringify(businesses, null, 2), 'utf-8');
 };
 
@@ -220,7 +253,7 @@ const userAuth = (req, res, next) => {
     if (token && token.startsWith('mock-jwt-for-')) {
         // For this demo, we'll just check if the token looks like our mock token.
         // A real app would verify the token's signature and expiration.
-        console.log('[AUTH] User authenticated with mock token.');
+        // console.log('[AUTH] User authenticated with mock token.');
         next();
     } else {
         res.status(401).json({ message: 'Unauthorized: Invalid or missing token' });
@@ -238,11 +271,11 @@ const contactSchema = yup.object({
 // ✅ POST endpoint for contact form submissions
 app.post('/api/contact', contactLimiter, async (req, res) => {
     const { name, email, subject, message } = req.body;
-    console.log(`[DEBUG] POST /api/contact - Received submission from: ${name} <${email}>`);
+    // console.log(`[DEBUG] POST /api/contact - Received submission from: ${name} <${email}>`);
 
     try {
         await contactSchema.validate(req.body, { abortEarly: false });
-        console.log('[DEBUG] POST /api/contact - Validation successful.');
+        // console.log('[DEBUG] POST /api/contact - Validation successful.');
 
          const mailOptions = {
             from: process.env.EMAIL_USER, // Sender address (must be the same as your auth user for some services)
@@ -258,7 +291,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log('[INFO] Contact form email sent successfully.');
+        // console.log('[INFO] Contact form email sent successfully.');
         res.status(200).json({ message: 'Message sent successfully!' });
     } catch (error) {
         // Handle validation errors from Yup
@@ -267,8 +300,8 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
             return res.status(400).json({ message: 'Validation failed.', errors: error.errors });
         }
         // Handle other errors
-        console.error('Error sending contact form email:', error);
-        res.status(500).json({ message: 'Failed to send message.', error: error.message });
+        logger.error('Error sending contact form email', { error: error.message });
+        res.status(500).json({ message: 'Failed to send message.' });
     }
 });
 
@@ -277,7 +310,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 app.get('/api/businesses', (req, res) => {
     const { city, type, status, search } = req.query;
     let businesses = getBusinesses();
-    console.log('[DEBUG] GET /api/businesses - Received filters:', { city, type, status, search });
+    // console.log('[DEBUG] GET /api/businesses - Received filters:', { city, type, status, search });
 
     // Filtering
     if (city) {
@@ -305,7 +338,7 @@ app.get('/api/businesses/:id', (req, res) => {
     const businesses = getBusinesses();
     const business = businesses.find(b => b.b_id === parseInt(req.params.id));
 
-    console.log(`[DEBUG] GET /api/businesses/:id - Searching for ID: ${req.params.id}`);
+    // console.log(`[DEBUG] GET /api/businesses/:id - Searching for ID: ${req.params.id}`);
 
     if (!business) {
         return res.status(404).send('Business not found');
@@ -323,7 +356,7 @@ app.post('/api/businesses', userAuth, (req, res) => {
         ...req.body
     };
 
-    console.log('[DEBUG] POST /api/businesses - Creating new business:', newBusiness);
+    // console.log('[DEBUG] POST /api/businesses - Creating new business:', newBusiness);
 
     businesses.push(newBusiness);
     saveBusinesses(businesses);
@@ -336,7 +369,7 @@ app.put('/api/businesses/:id', userAuth, (req, res) => {
     const businesses = getBusinesses();
     const businessIndex = businesses.findIndex(b => b.b_id === parseInt(req.params.id));
 
-    console.log(`[DEBUG] PUT /api/businesses/:id - Updating business ID ${req.params.id} with data:`, req.body);
+    // console.log(`[DEBUG] PUT /api/businesses/:id - Updating business ID ${req.params.id} with data:`, req.body);
 
     if (businessIndex === -1) {
         return res.status(404).send('Business not found');
@@ -356,7 +389,7 @@ app.delete('/api/businesses/:id', userAuth, (req, res) => {
     let businesses = getBusinesses();
     const filteredBusinesses = businesses.filter(b => b.b_id !== parseInt(req.params.id));
 
-    console.log(`[DEBUG] DELETE /api/businesses/:id - Deleting business ID: ${req.params.id}`);
+    // console.log(`[DEBUG] DELETE /api/businesses/:id - Deleting business ID: ${req.params.id}`);
 
     if (filteredBusinesses.length === businesses.length) {
         return res.status(404).send('Business not found');
@@ -367,5 +400,5 @@ app.delete('/api/businesses/:id', userAuth, (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    // console.log(`Server running at http://localhost:${PORT}`);
 });
